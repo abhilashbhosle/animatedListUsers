@@ -1,4 +1,12 @@
-import {View, Text, FlatList, Dimensions, StatusBar, Image,Animated} from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Dimensions,
+  StatusBar,
+  Image,
+  Animated,
+} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {faker} from '@faker-js/faker';
 
@@ -13,16 +21,15 @@ export default function App() {
   const [fakeUsers, setFakeUsers] = useState([]);
   const startFrom = StatusBar.currentHeight || 42;
   StatusBar.setBarStyle('light-content', true);
-  // const scrollY=useRef().current.animatedValue(0)
 
   useEffect(() => {
     const generateFakeUserList = () => {
-      const users = Array.from({length: 20}, generateFakeUser);
+      const users = Array.from({length: 30}, generateFakeUser);
       setFakeUsers(users);
     };
     generateFakeUserList();
   }, []);
-const scrollY=useRef(new Animated.Value(0)).current
+  const scrollY = useRef(new Animated.Value(0)).current;
   return (
     <View
       style={{
@@ -31,50 +38,49 @@ const scrollY=useRef(new Animated.Value(0)).current
         backgroundColor: '#161A30',
         paddingTop: startFrom,
       }}>
-     
       <Animated.FlatList
         keyExtractor={(_, index) => index.toString()}
         contentContainerStyle={{padding: 10}}
         data={fakeUsers}
         showsVerticalScrollIndicator={false}
-        onScroll={Animated.event([{
-          nativeEvent:{contentOffset:{y:scrollY}}
-        }],
-        {useNativeDriver:true}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {contentOffset: {y: scrollY}},
+            },
+          ],
+          {useNativeDriver: true},
         )}
-     
-        renderItem={({item,index}) => {
-          const inputRange=[
+        renderItem={({item, index}) => {
+          const inputRange = [
             -1,
             0,
-           (65+40+20)*index, //avatarsize+padding+marginvertical
-           (65+40+20)*(index+2)
-          ]
-          const scale=scrollY.interpolate({
+            (65 + 40 + 20) * index, //avatarsize+padding+marginvertical
+            (65 + 40 + 20) * (index + 2),
+          ];
+          const scale = scrollY.interpolate({
             inputRange,
-            outputRange:[1,1,1,0]
-          })
-          const inputRangeOpacity=[
-            -1,
-            0,
-           (65+40+20)*index, //avatarsize+padding+marginvertical
-           (65+40+20)*(index+2)
-          ]
-          const borderColor=scrollY.interpolate({
-            inputRange:inputRangeOpacity,
-            outputRange:['#C21292','#C21292','#C21292','transparent']
-          })
-          console.log((65+40+20)*index,(65+40+20)*(index+2))
+            outputRange: [1, 1, 1, 0],
+          });
+          const backgroundColor = scrollY.interpolate({
+            inputRange: inputRange,
+            outputRange: ['#C21292', '#C21292', '#C21292', 'transparent'],
+          });
+          const transformHorizontal = scrollY.interpolate({
+            inputRange: inputRange,
+            outputRange: [0, 0, 0, width - 50],
+          });
           return (
             <Animated.View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 borderWidth: 0.5,
-               borderColor,
-                borderRadius: 12,
+                // borderBottomRightRadius: 30,
+                borderTopRightRadius: 30,
+                backgroundColor,
                 marginVertical: 10,
-                transform:[{scale}],
+                transform: [{scale}, {translateX: transformHorizontal}],
               }}>
               <View style={{padding: 20, marginRight: 2}}>
                 <Image
